@@ -581,8 +581,7 @@
                 document.querySelectorAll('.song-item').forEach(item => {
                     item.addEventListener('click', function() {
                         const songId = this.getAttribute('data-id');
-                        const song = songsData.find(s => (s.id || s.nome) == songId);
-                        
+                        const song = songsData[songId];
                         if (song) {
                             showLyricsModal(song);
                             updateUrl(song.id || song.nome);
@@ -801,7 +800,7 @@ if (result.success) {
                 if (!songId) {
                     closeLyricsModal();
                 } else {
-                    const song = songsData.find(s => (s.id || s.nome) == songId);
+                    const song = songsData[parseInt(songId)];
                     if (song) {
                         showLyricsModal(song);
                     }
@@ -818,7 +817,7 @@ if (result.success) {
                 const songId = urlParams.get('id');
                 
                 if (songId) {
-                    const song = songsData.find(s => (s.id || s.nome) == songId);
+                   const song = songsData[parseInt(songId)];
                     if (song) {
                         showLyricsModal(song);
                     }
