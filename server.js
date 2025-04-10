@@ -7,7 +7,7 @@ const axios = require('axios');
 const simpleGit = require('simple-git');
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000
 const SENHA = process.env.SENHA;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO_URL = 'https://github.com/xavitinho/letras.git';
