@@ -609,7 +609,7 @@ document.querySelectorAll('.song-item').forEach((item, index) => {
             function updateUrl(songId = null) {
                 const url = new URL(window.location);
                 
-                if (songId) {
+                if (songId !== null) {
                     url.searchParams.set('id', songId);
                 } else {
                     url.searchParams.delete('id');
@@ -618,51 +618,28 @@ document.querySelectorAll('.song-item').forEach((item, index) => {
                 window.history.pushState({}, '', url);
             }
 
-           function copySongLink() {
-    const songId = new URLSearchParams(window.location.search).get('id');
-
-    if (!songId) {
-        showToast('Abra uma música antes de compartilhar o link.');
-        return;
-    }
-
-    const link = window.location.href;
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link)
-            .then(() => {
-                showToast('Link copiado para a área de transferência!');
-            })
-            .catch(err => {
-                console.error('Erro ao copiar com clipboard API:', err);
-                fallbackCopy(link);
-            });
-    } else {
-        fallbackCopy(link);
-    }
-
-    function fallbackCopy(text) {
-        const tempInput = document.createElement('input');
-        tempInput.value = text;
-        tempInput.setAttribute('readonly', '');
-        tempInput.style.position = 'absolute';
-        tempInput.style.left = '-9999px';
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        try {
-            const successful = document.execCommand('copy');
-            if (successful) {
-                showToast('Link copiado!');
-            } else {
-                showToast('Não foi possível copiar o link.');
-            }
-        } catch (err) {
-            console.error('Erro no fallback de cópia:', err);
-            showToast('Erro ao copiar o link.');
-        }
-        document.body.removeChild(tempInput);
-    }
-}
+            // Copiar link da música atual
+            function copySongLink() {
+                const url = new URL(window.location);
+                const songId = url.searchParams.get('id');
+                
+                if (songId !== null) {
+                    navigator.clipboard.writeText(window.location.href)
+                        .then(() => {
+                            showToast('link copiado para a área de transferência!');
+                        })
+                        .catch(err => {
+                            console.error('erro ao copiar link:', err);
+                            // Fallback para navegadores mais antigos
+                            const tempInput = document.createElement('input');
+                            tempInput.value = window.location.href;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(tempInput);
+                            showToast('Link copiado!');
+                        });
+                }
 
 
             // Função para mostrar o toast message
@@ -839,7 +816,7 @@ if (result.success) {
                 const urlParams = new URLSearchParams(window.location.search);
                 const songId = urlParams.get('id');
                 
-                if (songId) {
+                if (songId !== null) {
                    const song = songsData[parseInt(songId)];
                     if (song) {
                         showLyricsModal(song);
