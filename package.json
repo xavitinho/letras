@@ -1,5 +1,5 @@
 {
-  "name": "letras-server",
+  "name": "letrasserver",
   "version": "1.0.0",
   "description": "Servidor para gerenciamento de letras musicais com sync no GitHub",
   "main": "server.js",
