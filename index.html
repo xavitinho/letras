@@ -425,12 +425,7 @@
                 <input type="text" id="search-input" placeholder="Digite o nome da música ou artista...">
                 <button id="search-btn">Buscar</button>
             </div>
-            <div class="filter-options">
-                <button class="filter-btn active" data-filter="all">Todas</button>
-                <button class="filter-btn" data-filter="recent">Recentes</button>
-                <button class="filter-btn" data-filter="popular">Populares</button>
             </div>
-        </div>
         
         <div id="artists-container" class="artists-container">
             <div class="no-results">Carregando letras de música...</div>
@@ -512,7 +507,7 @@
             async function loadLyrics() {
                 if (!cachedLyrics) {
                     try {
-                        const response = await fetch('/letras/data/songs.json');
+                        const response = await fetch('/data/songs.json');
                         
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -775,14 +770,22 @@
 
                     const result = await response.json();
                     
-                    if (result.success) {
-                        // Invalidar cache e recarregar
-                        cachedLyrics = null;
-                        localStorage.removeItem('cachedLyrics');
-                        songsData = await loadLyrics();
-                        organizeByArtist();
-                        addModal.style.display = 'none';
-                        lyricForm.reset();
+                    
+if (result.success) {
+    const novaMusica = {
+        nome: newLyric.nome,
+        artista: newLyric.artista,
+        letra: newLyric.letra,
+        data: new Date().toISOString()
+    };
+
+    songsData.push(novaMusica);
+    cachedLyrics = songsData;
+    localStorage.setItem('cachedLyrics', JSON.stringify(songsData));
+    organizeByArtist();
+
+    addModal.style.display = 'none';
+    lyricForm.reset();
                         showToast('Letra adicionada com sucesso!');
                     } else {
                         errorMessage.textContent = result.error || 'Erro ao salvar letra';
