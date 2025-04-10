@@ -64,9 +64,15 @@ app.post('/letras', async (req, res) => {
 
         res.json({ success: true });
     } catch (error) {
-        console.error('Erro ao salvar no GitHub:', error.response?.data || error.message);
-        res.status(500).json({ error: 'Erro ao salvar letra no GitHub' });
+    if (error.response) {
+        console.error('Erro da API GitHub:', error.response.status, error.response.statusText);
+        console.error('Corpo da resposta:', error.response.data);
+    } else {
+        console.error('Erro inesperado:', error.message);
     }
+    res.status(500).json({ error: 'Erro ao salvar letra no GitHub' });
+}
+
 });
 
 app.listen(PORT, () => {
