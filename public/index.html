@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letras de Música</title>
+    <style>
+        /* Mantenha todo o CSS anterior e adicione: */
+        
+        .add-lyric-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .add-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .add-form {
+            background: white;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mantenha todo o conteúdo anterior -->
+    
+    <button class="add-lyric-btn" id="openAddForm">Adicionar letra</button>
+
+    <div class="add-modal" id="addModal">
+        <div class="add-form">
+            <h2>Adicionar nova letra</h2>
+            <form id="lyricForm">
+                <div class="form-group">
+                    <label>Nome da música:</label>
+                    <input type="text" id="songName" required>
+                </div>
+                <div class="form-group">
+                    <label>Artista:</label>
+                    <input type="text" id="artist" required>
+                </div>
+                <div class="form-group">
+                    <label>Letra:</label>
+                    <textarea id="lyrics" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Senha:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Enviar</button>
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Cache de letras
+        let cachedLyrics = null;
+
+        // Carregar letras
+        async function loadLyrics() {
+            if (!cachedLyrics) {
+                try {
+                    const response = await fetch('https://letrasserver.onrender.com/letras');
+                    cachedLyrics = await response.json();
+                    localStorage.setItem('cachedLyrics', JSON.stringify(cachedLyrics));
+                } catch (error) {
+                    console.error('Erro ao carregar letras:', error);
+                    // Tentar usar cache local
+                    const localCache = localStorage.getItem('cachedLyrics');
+                    if (localCache) {
+                        cachedLyrics = JSON.parse(localCache);
+                    }
+                }
+            }
+            return cachedLyrics;
+        }
+
+        // Atualizar interface
+        function updateUI(lyrics) {
+            // Mantenha sua lógica atual de exibição de letras
+        }
+
+        // Modal de adição
+        const addModal = document.getElementById('addModal');
+        const openAddForm = document.getElementById('openAddForm');
+        const lyricForm = document.getElementById('lyricForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        openAddForm.addEventListener('click', () => {
+            addModal.style.display = 'block';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === addModal) {
+                addModal.style.display = 'none';
+            }
+        });
+
+        lyricForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newLyric = {
+                nome: document.getElementById('songName').value,
+                artista: document.getElementById('artist').value,
+                letra: document.getElementById('lyrics').value,
+                senha: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('https://letrasserver.onrender.com/letras', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newLyric)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Invalidar cache e recarregar
+                    cachedLyrics = null;
+                    localStorage.removeItem('cachedLyrics');
+                    loadLyrics().then(updateUI);
+                    addModal.style.display = 'none';
+                    lyricForm.reset();
+                } else {
+                    errorMessage.textContent = result.error || 'Erro ao salvar letra';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Erro de conexão com o servidor';
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        // Inicialização
+        loadLyrics().then(updateUI);
+    </script>
+</body>
+</html>
