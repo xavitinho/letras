@@ -4,8 +4,276 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letras de Música</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Mantenha todo o CSS anterior e adicione: */
+        :root {
+            --primary-color: #6a0dad;
+            --secondary-color: #9c27b0;
+            --light-purple: #ba68c8;
+            --dark-purple: #4a148c;
+            --text-color: #333;
+            --light-bg: #f3e5f5;
+            --white: #ffffff;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 1.2rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            width: 100%;
+        }
+        
+        .search-container {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            min-width: 0;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        
+        button:hover {
+            background-color: var(--dark-purple);
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .filter-btn {
+            background-color: var(--light-bg);
+            color: var(--primary-color);
+            border: 1px solid var(--light-purple);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .artists-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        
+        .artist-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .artist-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .artist-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 0.8rem;
+        }
+        
+        .artist-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .songs-list {
+            padding: 0.8rem;
+        }
+        
+        .song-item {
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .song-item:last-child {
+            border-bottom: none;
+        }
+        
+        .song-item:hover {
+            background-color: var(--light-bg);
+        }
+        
+        .song-title {
+            font-weight: 500;
+            color: var(--dark-purple);
+            font-size: 0.95rem;
+        }
+        
+        .lyrics-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+        
+        .lyrics-content {
+            background-color: var(--white);
+            margin: 2rem auto;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .lyrics-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 1.2rem;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .lyrics-header h2 {
+            margin-right: 1rem;
+            flex-grow: 1;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .modal-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .modal-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .lyrics-body {
+            padding: 1.5rem;
+            white-space: pre-line;
+            line-height: 1.7;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 1.5rem;
+            color: #666;
+        }
+
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--dark-purple);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+        }
         
         .add-lyric-btn {
             position: fixed;
@@ -47,6 +315,7 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .form-group input,
@@ -55,18 +324,138 @@
             padding: 0.8rem;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
         }
 
         .error-message {
-            color: red;
+            color: #d32f2f;
             margin-top: 1rem;
             display: none;
+            background-color: #fde8e8;
+            padding: 0.8rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            .container {
+                padding: 0.8rem;
+            }
+            
+            .search-container {
+                padding: 0.8rem;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            button#search-btn {
+                width: 100%;
+                padding: 0.8rem;
+            }
+            
+            input[type="text"] {
+                width: 100%;
+                font-size: 0.95rem;
+            }
+            
+            .artists-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .lyrics-content {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+                max-height: none;
+            }
+            
+            .lyrics-header {
+                padding: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .lyrics-body {
+                padding: 1rem;
+                font-size: 0.95rem;
+                max-height: calc(100vh - 140px);
+            }
+
+            .add-form {
+                width: 90%;
+                margin: 1rem auto;
+                padding: 1rem;
+            }
+            
+            .add-lyric-btn {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Mantenha todo o conteúdo anterior -->
+    <header>
+        <h1>Letras de Música</h1>
+        <p>Encontre suas letras favoritas</p>
+    </header>
     
+    <div class="container">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Digite o nome da música ou artista...">
+                <button id="search-btn">Buscar</button>
+            </div>
+            <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">Todas</button>
+                <button class="filter-btn" data-filter="recent">Recentes</button>
+                <button class="filter-btn" data-filter="popular">Populares</button>
+            </div>
+        </div>
+        
+        <div id="artists-container" class="artists-container">
+            <div class="no-results">Carregando letras de música...</div>
+        </div>
+    </div>
+    
+    <div id="lyrics-modal" class="lyrics-modal">
+        <div class="lyrics-content">
+            <div class="lyrics-header">
+                <h2 id="modal-song-title"></h2>
+                <div class="modal-actions">
+                    <button class="modal-btn" id="share-btn" title="Compartilhar">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="modal-btn close-btn" title="Fechar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="lyrics-body" class="lyrics-body">
+                <!-- A letra da música será carregada aqui -->
+            </div>
+        </div>
+    </div>
+
     <button class="add-lyric-btn" id="openAddForm">Adicionar letra</button>
 
     <div class="add-modal" id="addModal">
@@ -74,111 +463,369 @@
             <h2>Adicionar nova letra</h2>
             <form id="lyricForm">
                 <div class="form-group">
-                    <label>Nome da música:</label>
+                    <label for="songName">Nome da música:</label>
                     <input type="text" id="songName" required>
                 </div>
                 <div class="form-group">
-                    <label>Artista:</label>
+                    <label for="artist">Artista:</label>
                     <input type="text" id="artist" required>
                 </div>
                 <div class="form-group">
-                    <label>Letra:</label>
-                    <textarea id="lyrics" rows="6" required></textarea>
+                    <label for="lyrics">Letra:</label>
+                    <textarea id="lyrics" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Senha:</label>
-                    <input type="password" id="password" required>
+                    <label for="password">Senha:</label>
+                    <input type="text" id="password" required> <!-- Alterado para type="text" -->
                 </div>
-                <button type="submit">Enviar</button>
+                <button type="submit">Enviar letra</button>
                 <div class="error-message" id="errorMessage"></div>
             </form>
         </div>
     </div>
 
     <script>
-        // Cache de letras
-        let cachedLyrics = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos da interface
+            const artistsContainer = document.getElementById('artists-container');
+            const searchInput = document.getElementById('search-input');
+            const searchBtn = document.getElementById('search-btn');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const lyricsModal = document.getElementById('lyrics-modal');
+            const modalSongTitle = document.getElementById('modal-song-title');
+            const lyricsBody = document.getElementById('lyrics-body');
+            const closeBtn = document.querySelector('.close-btn');
+            const shareBtn = document.getElementById('share-btn');
+            const openAddForm = document.getElementById('openAddForm');
+            const addModal = document.getElementById('addModal');
+            const lyricForm = document.getElementById('lyricForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Dados das músicas
+            let songsData = [];
+            let artistsData = [];
+            
+            // Cache de letras
+            let cachedLyrics = null;
 
-        // Carregar letras
-        async function loadLyrics() {
-            if (!cachedLyrics) {
-                try {
-                    const response = await fetch('https://letrasserver.onrender.com/letras');
-                    cachedLyrics = await response.json();
-                    localStorage.setItem('cachedLyrics', JSON.stringify(cachedLyrics));
-                } catch (error) {
-                    console.error('Erro ao carregar letras:', error);
-                    // Tentar usar cache local
-                    const localCache = localStorage.getItem('cachedLyrics');
-                    if (localCache) {
-                        cachedLyrics = JSON.parse(localCache);
+            // Carregar as letras de música
+            async function loadLyrics() {
+                if (!cachedLyrics) {
+                    try {
+                        const response = await fetch('https://letrasserver.onrender.com/letras');
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Resposta não é JSON');
+                        }
+
+                        cachedLyrics = await response.json();
+                        localStorage.setItem('cachedLyrics', JSON.stringify(cachedLyrics));
+                    } catch (error) {
+                        console.error('Erro ao carregar letras:', error);
+                        const localCache = localStorage.getItem('cachedLyrics');
+                        if (localCache) {
+                            cachedLyrics = JSON.parse(localCache);
+                        } else {
+                            cachedLyrics = [];
+                        }
                     }
                 }
+                return cachedLyrics;
             }
-            return cachedLyrics;
-        }
 
-        // Atualizar interface
-        function updateUI(lyrics) {
-            // Mantenha sua lógica atual de exibição de letras
-        }
-
-        // Modal de adição
-        const addModal = document.getElementById('addModal');
-        const openAddForm = document.getElementById('openAddForm');
-        const lyricForm = document.getElementById('lyricForm');
-        const errorMessage = document.getElementById('errorMessage');
-
-        openAddForm.addEventListener('click', () => {
-            addModal.style.display = 'block';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === addModal) {
-                addModal.style.display = 'none';
-            }
-        });
-
-        lyricForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const newLyric = {
-                nome: document.getElementById('songName').value,
-                artista: document.getElementById('artist').value,
-                letra: document.getElementById('lyrics').value,
-                senha: document.getElementById('password').value
-            };
-
-            try {
-                const response = await fetch('https://letrasserver.onrender.com/letras', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(newLyric)
-                });
-
-                const result = await response.json();
+            // Organizar músicas por artista
+            function organizeByArtist() {
+                const artistsMap = new Map();
                 
-                if (result.success) {
-                    // Invalidar cache e recarregar
-                    cachedLyrics = null;
-                    localStorage.removeItem('cachedLyrics');
-                    loadLyrics().then(updateUI);
-                    addModal.style.display = 'none';
-                    lyricForm.reset();
+                songsData.forEach(song => {
+                    if (!artistsMap.has(song.artista)) {
+                        artistsMap.set(song.artista, []);
+                    }
+                    artistsMap.get(song.artista).push(song);
+                });
+                
+                artistsData = Array.from(artistsMap.entries()).map(([artist, songs]) => ({
+                    artist,
+                    songs
+                }));
+                
+                displayArtists(artistsData);
+            }
+
+            // Exibir artistas na página
+            function displayArtists(artists) {
+                if (artists.length === 0) {
+                    artistsContainer.innerHTML = '<div class="no-results">Nenhuma letra encontrada.</div>';
+                    return;
+                }
+                
+                artistsContainer.innerHTML = '';
+                
+                artists.forEach(artistData => {
+                    const artistCard = document.createElement('div');
+                    artistCard.className = 'artist-card';
+                    
+                    artistCard.innerHTML = `
+                        <div class="artist-header">
+                            <h3 class="artist-name">${artistData.artist}</h3>
+                        </div>
+                        <div class="songs-list">
+                            ${artistData.songs.map(song => `
+                                <div class="song-item" data-id="${song.id || song.nome}">
+                                    <div class="song-title">${song.nome}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    
+                    artistsContainer.appendChild(artistCard);
+                });
+                
+                // Adicionar eventos de clique nas músicas
+                document.querySelectorAll('.song-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const songId = this.getAttribute('data-id');
+                        const song = songsData.find(s => (s.id || s.nome) == songId);
+                        
+                        if (song) {
+                            showLyricsModal(song);
+                            updateUrl(song.id || song.nome);
+                        }
+                    });
+                });
+            }
+
+            // Mostrar modal com a letra da música
+            function showLyricsModal(song) {
+                modalSongTitle.textContent = `${song.nome} - ${song.artista}`;
+                lyricsBody.textContent = song.letra;
+                lyricsModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Fechar modal
+            function closeLyricsModal() {
+                lyricsModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                updateUrl();
+            }
+
+            // Atualiza a URL com o ID da música
+            function updateUrl(songId = null) {
+                const url = new URL(window.location);
+                
+                if (songId) {
+                    url.searchParams.set('id', songId);
                 } else {
-                    errorMessage.textContent = result.error || 'Erro ao salvar letra';
+                    url.searchParams.delete('id');
+                }
+                
+                window.history.pushState({}, '', url);
+            }
+
+            // Copiar link da música atual
+            function copySongLink() {
+                const url = new URL(window.location);
+                const songId = url.searchParams.get('id');
+                
+                if (songId) {
+                    navigator.clipboard.writeText(window.location.href)
+                        .then(() => {
+                            showToast('Link copiado para a área de transferência!');
+                        })
+                        .catch(err => {
+                            console.error('Erro ao copiar link:', err);
+                            // Fallback para navegadores mais antigos
+                            const tempInput = document.createElement('input');
+                            tempInput.value = window.location.href;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(tempInput);
+                            showToast('Link copiado!');
+                        });
+                }
+            }
+
+            // Função para mostrar o toast message
+            function showToast(message) {
+                const existingToast = document.querySelector('.toast-message');
+                if (existingToast) {
+                    existingToast.remove();
+                }
+                
+                const toast = document.createElement('div');
+                toast.className = 'toast-message';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                }, 3000);
+            }
+
+            // Filtrar músicas por busca
+            function filterSongs(searchTerm) {
+                searchTerm = searchTerm.toLowerCase();
+                
+                if (!searchTerm) {
+                    displayArtists(artistsData);
+                    return;
+                }
+                
+                const filteredSongs = songsData.filter(song => 
+                    song.nome.toLowerCase().includes(searchTerm) || 
+                    song.artista.toLowerCase().includes(searchTerm) ||
+                    song.letra.toLowerCase().includes(searchTerm)
+                );
+                
+                if (filteredSongs.length === 0) {
+                    artistsContainer.innerHTML = '<div class="no-results">Nenhuma letra encontrada com esse termo.</div>';
+                    return;
+                }
+                
+                // Organizar os resultados filtrados por artista
+                const artistsMap = new Map();
+                
+                filteredSongs.forEach(song => {
+                    if (!artistsMap.has(song.artista)) {
+                        artistsMap.set(song.artista, []);
+                    }
+                    artistsMap.get(song.artista).push(song);
+                });
+                
+                const filteredArtists = Array.from(artistsMap.entries()).map(([artist, songs]) => ({
+                    artist,
+                    songs
+                }));
+                
+                displayArtists(filteredArtists);
+            }
+
+            // Event listeners
+            searchBtn.addEventListener('click', () => {
+                filterSongs(searchInput.value);
+            });
+            
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    filterSongs(searchInput.value);
+                }
+            });
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    displayArtists(artistsData);
+                });
+            });
+            
+            closeBtn.addEventListener('click', closeLyricsModal);
+            shareBtn.addEventListener('click', copySongLink);
+            
+            lyricsModal.addEventListener('click', (e) => {
+                if (e.target === lyricsModal) {
+                    closeLyricsModal();
+                }
+            });
+
+            openAddForm.addEventListener('click', () => {
+                addModal.style.display = 'block';
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === addModal) {
+                    addModal.style.display = 'none';
+                    errorMessage.style.display = 'none';
+                }
+            });
+
+            lyricForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorMessage.style.display = 'none';
+                
+                const newLyric = {
+                    nome: document.getElementById('songName').value,
+                    artista: document.getElementById('artist').value,
+                    letra: document.getElementById('lyrics').value,
+                    senha: document.getElementById('password').value
+                };
+
+                try {
+                    const response = await fetch('https://letrasserver.onrender.com/letras', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(newLyric)
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Invalidar cache e recarregar
+                        cachedLyrics = null;
+                        localStorage.removeItem('cachedLyrics');
+                        songsData = await loadLyrics();
+                        organizeByArtist();
+                        addModal.style.display = 'none';
+                        lyricForm.reset();
+                        showToast('Letra adicionada com sucesso!');
+                    } else {
+                        errorMessage.textContent = result.error || 'Erro ao salvar letra';
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    errorMessage.textContent = 'Erro de conexão com o servidor';
                     errorMessage.style.display = 'block';
                 }
-            } catch (error) {
-                errorMessage.textContent = 'Erro de conexão com o servidor';
-                errorMessage.style.display = 'block';
-            }
-        });
+            });
 
-        // Inicialização
-        loadLyrics().then(updateUI);
+            // Permite navegação pelo histórico
+            window.addEventListener('popstate', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const songId = urlParams.get('id');
+                
+                if (!songId) {
+                    closeLyricsModal();
+                } else {
+                    const song = songsData.find(s => (s.id || s.nome) == songId);
+                    if (song) {
+                        showLyricsModal(song);
+                    }
+                }
+            });
+
+            // Inicialização
+            (async function init() {
+                songsData = await loadLyrics();
+                organizeByArtist();
+
+                // Verifica se há um ID na URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const songId = urlParams.get('id');
+                
+                if (songId) {
+                    const song = songsData.find(s => (s.id || s.nome) == songId);
+                    if (song) {
+                        showLyricsModal(song);
+                    }
+                }
+            })();
+        });
     </script>
 </body>
 </html>
