@@ -578,16 +578,16 @@
                 });
                 
                 // Adicionar eventos de clique nas músicas
-                document.querySelectorAll('.song-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        const songId = this.getAttribute('data-id');
-                        const song = songsData[songId];
-                        if (song) {
-                            showLyricsModal(song);
-                            updateUrl(song.id || song.nome);
-                        }
-                    });
-                });
+document.querySelectorAll('.song-item').forEach((item, index) => {
+    item.addEventListener('click', function () {
+        const song = songsData[index];
+        if (song) {
+            showLyricsModal(song);
+            updateUrl(index);
+        }
+    });
+});
+
             }
 
             // Mostrar modal com a letra da música
