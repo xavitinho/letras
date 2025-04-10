@@ -505,33 +505,29 @@
 
             // Carregar as letras de música
             async function loadLyrics() {
-                if (!cachedLyrics) {
-                    try {
-                        const response = await fetch('/letras/data/songs.json');
-                        
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        
-                        const contentType = response.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            throw new Error('Resposta não é JSON');
-                        }
+    try {
+        const response = await fetch('/data/songs.json');
+        if (!response.ok) throw new Error('Erro ao buscar JSON');
 
-                        cachedLyrics = await response.json();
-                        localStorage.setItem('cachedLyrics', JSON.stringify(cachedLyrics));
-                    } catch (error) {
-                        console.error('Erro ao carregar letras:', error);
-                        const localCache = localStorage.getItem('cachedLyrics');
-                        if (localCache) {
-                            cachedLyrics = JSON.parse(localCache);
-                        } else {
-                            cachedLyrics = [];
-                        }
-                    }
-                }
-                return cachedLyrics;
-            }
+        const latestData = await response.json();
+        const cachedData = localStorage.getItem('cachedLyrics');
+
+        // Verifica se o cache é diferente do arquivo remoto
+        if (!cachedData || JSON.stringify(latestData) !== cachedData) {
+            cachedLyrics = latestData;
+            localStorage.setItem('cachedLyrics', JSON.stringify(latestData));
+        } else {
+            cachedLyrics = JSON.parse(cachedData);
+        }
+    } catch (error) {
+        console.warn('Erro ao buscar JSON remoto, usando cache se disponível');
+        const fallback = localStorage.getItem('cachedLyrics');
+        cachedLyrics = fallback ? JSON.parse(fallback) : [];
+    }
+
+    return cachedLyrics;
+}
+
 
             // Organizar músicas por artista
             function organizeByArtist() {
