@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Letras de Música</title>
+    <title>letras de músicas (versão do alex samuel)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
@@ -415,20 +415,20 @@
 </head>
 <body>
     <header>
-        <h1>Letras de Música</h1>
-        <p>Encontre suas letras favoritas</p>
+        <h1>letras de músicas</h1>
+        <p>letras das musicas preferidas do alex samuel mas na versão dele mesmo</p>
     </header>
     
     <div class="container">
         <div class="search-container">
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Digite o nome da música ou artista...">
-                <button id="search-btn">Buscar</button>
+                <button id="search-btn">buscar</button>
             </div>
             </div>
         
         <div id="artists-container" class="artists-container">
-            <div class="no-results">Carregando letras de música...</div>
+            <div class="no-results">carregando letras de música...</div>
         </div>
     </div>
     
@@ -451,29 +451,29 @@
         </div>
     </div>
 
-    <button class="add-lyric-btn" id="openAddForm">Adicionar letra</button>
+    <button class="add-lyric-btn" id="openAddForm">adicionar letra</button>
 
     <div class="add-modal" id="addModal">
         <div class="add-form">
             <h2>Adicionar nova letra</h2>
             <form id="lyricForm">
                 <div class="form-group">
-                    <label for="songName">Nome da música:</label>
+                    <label for="songName">aome da música:</label>
                     <input type="text" id="songName" required>
                 </div>
                 <div class="form-group">
-                    <label for="artist">Artista:</label>
+                    <label for="artist">artista:</label>
                     <input type="text" id="artist" required>
                 </div>
                 <div class="form-group">
-                    <label for="lyrics">Letra:</label>
+                    <label for="lyrics">letra:</label>
                     <textarea id="lyrics" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="password">Senha:</label>
+                    <label for="password">senha super secreta:</label>
                     <input type="text" id="password" required> <!-- Alterado para type="text" -->
                 </div>
-                <button type="submit">Enviar letra</button>
+                <button type="submit">enviar letra</button>
                 <div class="error-message" id="errorMessage"></div>
             </form>
         </div>
@@ -520,7 +520,7 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
             cachedLyrics = JSON.parse(cachedData);
         }
     } catch (error) {
-        console.warn('Erro ao buscar JSON remoto, usando cache se disponível');
+        console.warn('erro ao buscar JSON remoto, usando cache se disponível');
         const fallback = localStorage.getItem('cachedLyrics');
         cachedLyrics = fallback ? JSON.parse(fallback) : [];
     }
@@ -551,7 +551,7 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
             // Exibir artistas na página
             function displayArtists(artists) {
                 if (artists.length === 0) {
-                    artistsContainer.innerHTML = '<div class="no-results">Nenhuma letra encontrada.</div>';
+                    artistsContainer.innerHTML = '<div class="no-results">nenhuma letra encontrada.</div>';
                     return;
                 }
                 
@@ -626,10 +626,10 @@ document.querySelectorAll('.song-item').forEach((item, index) => {
                 if (songId) {
                     navigator.clipboard.writeText(window.location.href)
                         .then(() => {
-                            showToast('Link copiado para a área de transferência!');
+                            showToast('link copiado para a área de transferência!');
                         })
                         .catch(err => {
-                            console.error('Erro ao copiar link:', err);
+                            console.error('erro ao copiar link:', err);
                             // Fallback para navegadores mais antigos
                             const tempInput = document.createElement('input');
                             tempInput.value = window.location.href;
@@ -682,7 +682,7 @@ document.querySelectorAll('.song-item').forEach((item, index) => {
                 );
                 
                 if (filteredSongs.length === 0) {
-                    artistsContainer.innerHTML = '<div class="no-results">Nenhuma letra encontrada com esse termo.</div>';
+                    artistsContainer.innerHTML = '<div class="no-results">nenhuma letra encontrada com esse termo.</div>';
                     return;
                 }
                 
@@ -781,13 +781,13 @@ if (result.success) {
 
     addModal.style.display = 'none';
     lyricForm.reset();
-                        showToast('Letra adicionada com sucesso!');
+                        showToast('letra adicionada com sucesso!');
                     } else {
-                        errorMessage.textContent = result.error || 'Erro ao salvar letra';
+                        errorMessage.textContent = result.error || 'erro ao salvar letra';
                         errorMessage.style.display = 'block';
                     }
                 } catch (error) {
-                    errorMessage.textContent = 'Erro de conexão com o servidor';
+                    errorMessage.textContent = 'erro de conexão com o servidor';
                     errorMessage.style.display = 'block';
                 }
             });
