@@ -506,7 +506,7 @@
             // Carregar as letras de música
             async function loadLyrics() {
     try {
-        const response = await fetch('/letras/data/songs.json');
+const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
         if (!response.ok) throw new Error('Erro ao buscar JSON');
 
         const latestData = await response.json();
