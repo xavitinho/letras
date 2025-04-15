@@ -143,6 +143,7 @@
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s;
     width: 100%;
+    break-inside: avoid; /* Importante para evitar quebras */
 }
 
 /* Responsividade */
@@ -580,7 +581,7 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
         return;
     }
 
-    // Limpa o container e cria 3 colunas vazias
+    // 1. Limpa o container e cria 3 colunas vazias
     artistsContainer.innerHTML = `
         <div class="artist-column" id="col1"></div>
         <div class="artist-column" id="col2"></div>
@@ -593,7 +594,14 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
         document.getElementById('col3')
     ];
 
-    // Para cada artista, adiciona seus cards à coluna mais "vazia"
+    // 2. Função para encontrar a coluna mais curta
+    const getShortestColumn = () => {
+        return columns.reduce((shortest, column) => {
+            return column.offsetHeight < shortest.offsetHeight ? column : shortest;
+        }, columns[0]);
+    };
+
+    // 3. Distribui os cards
     artists.forEach(artistData => {
         const artistCard = document.createElement('div');
         artistCard.className = 'artist-card';
@@ -610,15 +618,11 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
             </div>
         `;
 
-        // Encontra a coluna com menor altura
-        const shortestColumn = columns.reduce((prev, curr) => 
-            curr.offsetHeight < prev.offsetHeight ? curr : prev
-        );
-        
-        shortestColumn.appendChild(artistCard);
+        // 4. Insere na coluna mais curta
+        getShortestColumn().appendChild(artistCard);
     });
 
-    // Adiciona eventos de clique aos songs
+    // 5. Eventos de clique (mantido do seu código original)
     document.querySelectorAll('.song-item').forEach((item, index) => {
         item.addEventListener('click', function() {
             const song = songsData[index];
