@@ -137,13 +137,9 @@
 }
 
 .artist-card {
-    background-color: var(--white);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s;
+    break-inside: avoid;
+    page-break-inside: avoid;
     width: 100%;
-    break-inside: avoid; /* Importante para evitar quebras */
 }
 
 /* Responsividade */
@@ -574,34 +570,30 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
                 displayArtists(artistsData);
             }
 
-            // Exibir artistas na página
-            function displayArtists(artists) {
+
+
+function displayArtists(artists) {
     if (artists.length === 0) {
         artistsContainer.innerHTML = '<div class="no-results">Nenhuma letra encontrada.</div>';
         return;
     }
 
-    // 1. Limpa o container e cria 3 colunas vazias
-    artistsContainer.innerHTML = `
-        <div class="artist-column" id="col1"></div>
-        <div class="artist-column" id="col2"></div>
-        <div class="artist-column" id="col3"></div>
-    `;
+    // 1. Limpa o container e cria colunas
+    artistsContainer.innerHTML = '';
+    const columnCount = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
+    const columns = [];
+    
+    for (let i = 0; i < columnCount; i++) {
+        const col = document.createElement('div');
+        col.className = 'artist-column';
+        artistsContainer.appendChild(col);
+        columns.push({
+            element: col,
+            height: 0
+        });
+    }
 
-    const columns = [
-        document.getElementById('col1'),
-        document.getElementById('col2'),
-        document.getElementById('col3')
-    ];
-
-    // 2. Função para encontrar a coluna mais curta
-    const getShortestColumn = () => {
-        return columns.reduce((shortest, column) => {
-            return column.offsetHeight < shortest.offsetHeight ? column : shortest;
-        }, columns[0]);
-    };
-
-    // 3. Distribui os cards
+    // 2. Distribui os cards
     artists.forEach(artistData => {
         const artistCard = document.createElement('div');
         artistCard.className = 'artist-card';
@@ -618,11 +610,20 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
             </div>
         `;
 
-        // 4. Insere na coluna mais curta
-        getShortestColumn().appendChild(artistCard);
+        // 3. Encontra a coluna mais curta (usando um sistema de rastreamento)
+        let shortestColumn = columns[0];
+        for (const col of columns) {
+            if (col.height < shortestColumn.height) {
+                shortestColumn = col;
+            }
+        }
+        
+        // 4. Adiciona à coluna e atualiza a altura estimada
+        shortestColumn.element.appendChild(artistCard);
+        shortestColumn.height += artistCard.offsetHeight;
     });
 
-    // 5. Eventos de clique (mantido do seu código original)
+    // Eventos de clique (mantido)
     document.querySelectorAll('.song-item').forEach((item, index) => {
         item.addEventListener('click', function() {
             const song = songsData[index];
@@ -631,6 +632,8 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
     });
 }
 
+
+            
             // Mostrar modal com a letra da música
             function showLyricsModal(song) {
                 modalSongTitle.textContent = `${song.nome} - ${song.artista}`;
