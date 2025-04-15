@@ -125,24 +125,34 @@
         
 
 .artists-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.2rem;
+    column-count: 3;       /* Divide em 3 colunas verticais */
+    column-gap: 1.2rem;    /* Espaço entre as colunas */
+    width: 100%;
 }
 
 .artist-card {
+    display: inline-block; /* Importante para o column-count funcionar */
+    width: 100%;           /* Ocupa toda a largura da coluna */
+    margin-bottom: 1.2rem; /* Espaço entre os cards */
+    break-inside: avoid;   /* Evita que um card seja dividido entre colunas */
     background-color: var(--white);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s;
-    flex: 1 1 calc(33.333% - 1.2rem); /* 3 colunas com gap */
-    min-width: 280px; /* Largura mínima para cada card */
 }
 
+/* Ajuste para tablet (2 colunas) */
+@media (max-width: 1024px) {
+    .artists-container {
+        column-count: 2;
+    }
+}
+
+/* Ajuste para mobile (1 coluna) */
 @media (max-width: 768px) {
-    .artist-card {
-        flex: 1 1 100%; /* Uma coluna no mobile */
+    .artists-container {
+        column-count: 1;
     }
 }
         
