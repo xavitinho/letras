@@ -125,34 +125,39 @@
         
 
 .artists-container {
-    column-count: 3;       /* Divide em 3 colunas verticais */
-    column-gap: 1.2rem;    /* Espaço entre as colunas */
-    width: 100%;
+    display: flex;
+    gap: 1.2rem;
+}
+
+.artist-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
 }
 
 .artist-card {
-    display: inline-block; /* Importante para o column-count funcionar */
-    width: 100%;           /* Ocupa toda a largura da coluna */
-    margin-bottom: 1.2rem; /* Espaço entre os cards */
-    break-inside: avoid;   /* Evita que um card seja dividido entre colunas */
     background-color: var(--white);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s;
+    width: 100%;
 }
 
-/* Ajuste para tablet (2 colunas) */
+/* Responsividade */
 @media (max-width: 1024px) {
     .artists-container {
-        column-count: 2;
+        flex-wrap: wrap;
+    }
+    .artist-column {
+        flex: 1 1 calc(50% - 1.2rem); /* 2 colunas */
     }
 }
 
-/* Ajuste para mobile (1 coluna) */
 @media (max-width: 768px) {
-    .artists-container {
-        column-count: 1;
+    .artist-column {
+        flex: 1 1 100%; /* 1 coluna */
     }
 }
         
@@ -570,45 +575,57 @@ const response = await fetch(`/letras/data/songs.json?v=${Date.now()}`);
 
             // Exibir artistas na página
             function displayArtists(artists) {
-                if (artists.length === 0) {
-                    artistsContainer.innerHTML = '<div class="no-results">nenhuma letra encontrada.</div>';
-                    return;
-                }
-                
-                artistsContainer.innerHTML = '';
-                
-                artists.forEach(artistData => {
-                    const artistCard = document.createElement('div');
-                    artistCard.className = 'artist-card';
-                    
-                    artistCard.innerHTML = `
-                        <div class="artist-header">
-                            <h3 class="artist-name">${artistData.artist}</h3>
-                        </div>
-                        <div class="songs-list">
-                            ${artistData.songs.map(song => `
-                                <div class="song-item" data-id="${song.id || song.nome}">
-                                    <div class="song-title">${song.nome}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    
-                    artistsContainer.appendChild(artistCard);
-                });
-                
-                // Adicionar eventos de clique nas músicas
-document.querySelectorAll('.song-item').forEach((item, index) => {
-    item.addEventListener('click', function () {
-        const song = songsData[index];
-        if (song) {
-            showLyricsModal(song);
-            updateUrl(index);
-        }
-    });
-});
+    if (artists.length === 0) {
+        artistsContainer.innerHTML = '<div class="no-results">Nenhuma letra encontrada.</div>';
+        return;
+    }
 
-            }
+    // Limpa o container e cria 3 colunas vazias
+    artistsContainer.innerHTML = `
+        <div class="artist-column" id="col1"></div>
+        <div class="artist-column" id="col2"></div>
+        <div class="artist-column" id="col3"></div>
+    `;
+
+    const columns = [
+        document.getElementById('col1'),
+        document.getElementById('col2'),
+        document.getElementById('col3')
+    ];
+
+    // Para cada artista, adiciona seus cards à coluna mais "vazia"
+    artists.forEach(artistData => {
+        const artistCard = document.createElement('div');
+        artistCard.className = 'artist-card';
+        artistCard.innerHTML = `
+            <div class="artist-header">
+                <h3 class="artist-name">${artistData.artist}</h3>
+            </div>
+            <div class="songs-list">
+                ${artistData.songs.map(song => `
+                    <div class="song-item" data-id="${song.id || song.nome}">
+                        <div class="song-title">${song.nome}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Encontra a coluna com menor altura
+        const shortestColumn = columns.reduce((prev, curr) => 
+            curr.offsetHeight < prev.offsetHeight ? curr : prev
+        );
+        
+        shortestColumn.appendChild(artistCard);
+    });
+
+    // Adiciona eventos de clique aos songs
+    document.querySelectorAll('.song-item').forEach((item, index) => {
+        item.addEventListener('click', function() {
+            const song = songsData[index];
+            if (song) showLyricsModal(song);
+        });
+    });
+}
 
             // Mostrar modal com a letra da música
             function showLyricsModal(song) {
