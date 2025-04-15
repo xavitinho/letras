@@ -124,12 +124,18 @@
         
         
 
+/* Mantenha TODOS os seus estilos originais */
 .artists-container {
+    /* Seus estilos originais */
+    background-color: transparent;
+    color: var(--text-color);
+    /* Adicione APENAS isso: */
     display: flex;
     gap: 1.2rem;
 }
 
 .artist-column {
+    /* Novo elemento - estilos mínimos */
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -137,12 +143,18 @@
 }
 
 .artist-card {
-    break-inside: avoid;
-    page-break-inside: avoid;
+    /* Mantenha TODOS os seus estilos originais */
+    background-color: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+    /* Adicione APENAS isso: */
     width: 100%;
+    break-inside: avoid; /* Impede que o card quebre entre colunas */
 }
 
-/* Responsividade */
+/* Responsividade (adicione ao seu @media existente) */
 @media (max-width: 1024px) {
     .artists-container {
         flex-wrap: wrap;
@@ -578,25 +590,20 @@ function displayArtists(artists) {
         return;
     }
 
-    // 1. Limpa o container e cria colunas
+    // 1. Limpa o container e cria colunas dinâmicas
     artistsContainer.innerHTML = '';
     const columnCount = window.innerWidth > 1024 ? 3 : window.innerWidth > 768 ? 2 : 1;
-    const columns = [];
-    
-    for (let i = 0; i < columnCount; i++) {
+    const columns = Array.from({ length: columnCount }, () => {
         const col = document.createElement('div');
         col.className = 'artist-column';
         artistsContainer.appendChild(col);
-        columns.push({
-            element: col,
-            height: 0
-        });
-    }
+        return { element: col, height: 0 };
+    });
 
-    // 2. Distribui os cards
+    // 2. Distribui os cards mantendo SEUS ESTILOS ORIGINAIS
     artists.forEach(artistData => {
         const artistCard = document.createElement('div');
-        artistCard.className = 'artist-card';
+        artistCard.className = 'artist-card'; // Mantém sua classe original
         artistCard.innerHTML = `
             <div class="artist-header">
                 <h3 class="artist-name">${artistData.artist}</h3>
@@ -610,22 +617,17 @@ function displayArtists(artists) {
             </div>
         `;
 
-        // 3. Encontra a coluna mais curta (usando um sistema de rastreamento)
-        let shortestColumn = columns[0];
-        for (const col of columns) {
-            if (col.height < shortestColumn.height) {
-                shortestColumn = col;
-            }
-        }
-        
-        // 4. Adiciona à coluna e atualiza a altura estimada
+        // 3. Adiciona à coluna mais curta
+        const shortestColumn = columns.reduce((prev, curr) => 
+            curr.height < prev.height ? curr : prev
+        );
         shortestColumn.element.appendChild(artistCard);
         shortestColumn.height += artistCard.offsetHeight;
     });
 
-    // Eventos de clique (mantido)
+    // Mantenha seus eventos de clique originais
     document.querySelectorAll('.song-item').forEach((item, index) => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', () => {
             const song = songsData[index];
             if (song) showLyricsModal(song);
         });
