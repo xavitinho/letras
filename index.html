@@ -123,18 +123,26 @@
         }
         
         .artists-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.2rem;
-        }
-        
-        .artist-card {
-            background-color: var(--white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    justify-content: space-between;
+}
+
+.artist-card {
+    background-color: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+    width: calc(33.333% - 0.8rem); /* 3 colunas com gap */
+    margin-bottom: 1.2rem;
+}
+        @media (max-width: 768px) {
+    .artist-card {
+        width: 100%;
+    }
+}
         
         .artist-card:hover {
             transform: translateY(-3px);
